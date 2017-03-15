@@ -3,8 +3,10 @@ const util = require('util');
 
 let clientId = process.argv[2] || 'client1';
 let channelId = process.argv[3] || 'channel1';
+let host = process.argv[4] || '0.0.0.0';
+let port = process.argv[5] || 8124;
 
-const client = net.connect({ host:'0.0.0.0', port: 8124 }, () => {
+const client = net.connect({ host:host, port: port }, () => {
     // 'connect' listener
     util.log('connected to server!');
 
