@@ -14,26 +14,27 @@ const server = net.createServer((socket) => {
         // 所以放在 onData 事件中，而不是放在 createServer 
         // 的回调函数中
         if (sockets.has(socket)) {
-	        util.log('from client: ' + socket.guid + ' : ' + socket.clientId + ' : ' + socket.channelId + ' : ' +buffer.toString());
+            util.log('from client: ' + socket.guid + ' : ' + socket.clientId + ' : ' + socket.channelId + ' : ' + buffer.toString());
 
-        	// 已存在，则做转发工作
+            // 已存在，则做转发工作
             sockets.forEach((_socket) => {
                 if (_socket !== socket && _socket.channelId === socket.channelId && _socket.clientId !== socket.clientId) {
 
-                    _socket.write('转发 ' + socket.clientId + ' > '+ _socket.clientId + ' ' + buffer);
+                    util.log('转发 ' + socket.clientId + ' > ' + _socket.clientId + ' ' + buffer);
+                    _socket.write(buffer);
                 }
             })
         } else {
-        	// 首次连接，加入连接对象
-        	let ids = buffer.toString().split(':');
-        	socket.clientId = ids[0];
-        	socket.channelId = ids[1];
+            // 首次连接，加入连接对象
+            let ids = buffer.toString().split(':');
+            socket.clientId = ids[0];
+            socket.channelId = ids[1];
             socket.guid = guid.raw();
 
             sockets.add(socket);
             util.log(sockets.size)
 
-        	util.log('client added:' + socket.guid + ' : ' + socket.clientId + ' : ' + socket.channelId )
+            util.log('client added:' + socket.guid + ' : ' + socket.clientId + ' : ' + socket.channelId)
 
         }
 
@@ -42,7 +43,7 @@ const server = net.createServer((socket) => {
     })
 
     socket.on('end', () => {
-    	// 断开连接则删除连接对象
+        // 断开连接则删除连接对象
         sockets.delete(socket)
         util.log(sockets.size)
     })
@@ -51,8 +52,8 @@ const server = net.createServer((socket) => {
     throw err;
 });
 
-process.on('uncaughtException', function (err) {
-  console.log(err);
+process.on('uncaughtException', function(err) {
+    console.log(err);
 })
 
 server.listen(8124, () => {
