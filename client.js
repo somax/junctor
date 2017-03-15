@@ -13,13 +13,13 @@ const client = net.connect({ host:host, port: port }, () => {
     client.write(clientId+':'+channelId);
 
 
-    let intervalId = setInterval(() => {
-        client.write(Date.now().toString()+'\n')
-    }, 500);
+    // let intervalId = setInterval(() => {
+    //     client.write(Date.now().toString()+'\n')
+    // }, 10000);
 
-    client.on('end', () => {
-        clearInterval(intervalId);
-    })
+    // client.on('end', () => {
+    //     clearInterval(intervalId);
+    // })
 
 
 });
@@ -30,5 +30,19 @@ client.on('data', (data) => {
 client.on('end', () => {
     util.log('disconnected from server');
 
+
+});
+
+
+// ---------------
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  // output: process.stdout
+});
+
+rl.on('line', (input) => {
+  client.write(input)
 
 });

@@ -51,6 +51,9 @@ const server = net.createServer((socket) => {
     throw err;
 });
 
+process.on('uncaughtException', function (err) {
+  console.log(err);
+})
 
 server.listen(8124, () => {
     util.log('opened server on', server.address());
