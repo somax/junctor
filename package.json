@@ -4,12 +4,15 @@
   "description": "网络对接器，用来打通内网",
   "main": "index.js",
   "scripts": {
-    "start":"node .",
-    "client":"node client"
+    "start": "node .",
+    "client": "node client"
   },
   "author": "MaXiaoJun<somaxj@163.com>",
   "license": "ISC",
   "dependencies": {
     "guid": "0.0.12"
+  },
+  "devDependencies": {
+    "reconnect-net": "^1.1.1"
   }
 }
