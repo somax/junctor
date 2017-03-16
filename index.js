@@ -1,3 +1,6 @@
+/**
+ * junctor 服务端
+ */
 const net = require('net');
 const guid = require('guid');
 const util = require('util');
@@ -45,6 +48,14 @@ const server = net.createServer((socket) => {
 
     });
 
+    // 设置超时，客户端无响应 1分钟 自动销毁
+    socket.setTimeout(60000,()=>{
+        sockets.delete(socket);
+        socket.destroy();
+        clientEventLog('client timeout', socket);
+
+    });
+
     socket.on('end', () => {
         // 断开连接则删除连接对象
         sockets.delete(socket);
@@ -53,7 +64,7 @@ const server = net.createServer((socket) => {
     });
 
     socket.on('error',()=>{
-        socket.destory();
+        socket.destroy();
         clientEventLog('client destroyed', sockets);
 
     });

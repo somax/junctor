@@ -1,6 +1,10 @@
-const net = require('net');
+/**
+ * 这是用来测试连接的客户端
+ * @example
+ * node client.js user1 chatChannel
+ */
 const util = require('util');
-const rc = require('reconnect-net');
+const reconnect = require('reconnect-net');
 
 let clientId = process.argv[2] || 'client1';
 let channelId = process.argv[3] || 'channel1';
@@ -10,28 +14,26 @@ let port = process.argv[5] || 8124;
 let client;
 
 
-rc(function(_client){
+reconnect(function(_client){
     client = _client;
     util.log('...reconnected');
     _client.write(clientId + ':' + channelId);
 
-
+    // 发送心跳，保持连接
     let intervalId = setInterval(() => {
         _client.write(Date.now().toString()+'\n');
-    }, 10000);
+    }, 50000);
 
     _client.on('close', () => {
         clearInterval(intervalId);
     });
 
     _client.on('data', (data) => {
-
         util.log(data.toString());
-        // client.end();
     });
 }).connect(port,host);
 
-
+// 处理异常
 process.on('uncaughtException', function(err) {
     util.log(err);
 });
@@ -46,5 +48,4 @@ const rl = readline.createInterface({
 
 rl.on('line', (input) => {
     client.write(input);
-
 });
