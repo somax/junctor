@@ -5,6 +5,10 @@ const util = require('util');
 // 缓存所有连接对象
 let sockets = new Set();
 
+function clientEventLog(eventDescription, client){
+    util.log(`[${eventDescription}]: ${client.guid} : ${client.clientId} : ${client.channelId}`);
+}
+
 const server = net.createServer((socket) => {
 
 
@@ -23,7 +27,7 @@ const server = net.createServer((socket) => {
                     util.log('转发 ' + socket.clientId + ' > ' + _socket.clientId + ' ' + buffer);
                     _socket.write(buffer);
                 }
-            })
+            });
         } else {
             // 首次连接，加入连接对象
             let ids = buffer.toString().split(':');
@@ -32,29 +36,35 @@ const server = net.createServer((socket) => {
             socket.guid = guid.raw();
 
             sockets.add(socket);
-            util.log(sockets.size)
+            util.log(sockets.size);
 
-            util.log('client added:' + socket.guid + ' : ' + socket.clientId + ' : ' + socket.channelId)
+            clientEventLog('client joined', socket);
 
         }
 
 
-
-    })
+    });
 
     socket.on('end', () => {
         // 断开连接则删除连接对象
-        sockets.delete(socket)
-        util.log(sockets.size)
-    })
+        sockets.delete(socket);
+        clientEventLog('client left', socket);
+
+    });
+
+    socket.on('error',()=>{
+        socket.destory();
+        clientEventLog('client destroyed', sockets);
+
+    });
 
 }).on('error', (err) => {
     throw err;
 });
 
 process.on('uncaughtException', function(err) {
-    console.log(err);
-})
+    util.log(err);
+});
 
 server.listen(8124, () => {
     util.log('opened server on', server.address());
